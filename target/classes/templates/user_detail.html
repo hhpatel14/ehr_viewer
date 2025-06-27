@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>User Details - EHR Viewer</title>
+</head>
+<body>
+    <h2>User Details</h2>
+    <table border="1" cellpadding="5" cellspacing="0">
+        <tr><th>Name</th><td th:text="${user.name}"></td></tr>
+        <tr><th>User Type</th><td th:text="${user.type}"></td></tr>
+        <tr><th>Username</th><td th:text="${user.username}"></td></tr>
+        <tr><th>Date of Birth</th><td th:text="${user.dob}"></td></tr>
+        <tr><th>Address</th><td th:text="${user.address}"></td></tr>
+        <tr><th>Age</th><td th:text="${user.age}"></td></tr>
+        <tr><th>Gender</th><td th:text="${user.gender}"></td></tr>
+        <tr><th>Contact Info</th><td th:text="${user.contactInfo}"></td></tr>
+    </table>
+    <br>
+    <a th:href="@{/ui/users}">Back to User List</a>
+</body>
+</html> 

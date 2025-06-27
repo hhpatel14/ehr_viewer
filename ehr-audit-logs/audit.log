@@ -1,0 +1,21 @@
+{"timestamp":"2025-06-27T12:33:40.933157Z","event_type":"USER_LOGIN","action":"LOGIN","resource":"user/DOCTOR-001","result":"success","message":"User alicesmith logged in successfully"}
+{"timestamp":"2025-06-27T12:33:40.967707Z","event_type":"USER_VIEW_ALL","action":"VIEW_ALL","resource":"user","result":"success","message":"User DOCTOR-001 viewed all users"}
+{"timestamp":"2025-06-27T12:34:27.242381Z","event_type":"USER_ADD","user_id":"DOCTOR-001","session_id":"9c09abc6-c1b8-4254-b4c9-350060a3b1d1","application":"EHRViewer","component":"UserService","action":"ADD","resource":"user/7afa42c7-c207-4460-a36a-c52dd6f7ddc0","result":"success","message":"Added user: Hiteshwari","details":{"reason":"Added via UI","added_user_type":"DOCTOR"},"correlation_id":"54abe783-9d8f-4e85-ac7b-92a156be6327"}
+{"timestamp":"2025-06-27T12:34:27.253815Z","event_type":"USER_VIEW_ALL","action":"VIEW_ALL","resource":"user","result":"success","message":"User DOCTOR-001 viewed all users"}
+{"timestamp":"2025-06-27T12:34:31.101661Z","event_type":"USER_VIEW","action":"VIEW","resource":"user/7afa42c7-c207-4460-a36a-c52dd6f7ddc0","result":"success","message":"User DOCTOR-001 viewed user: Hiteshwari"}
+{"timestamp":"2025-06-27T12:34:40.565007Z","event_type":"USER_VIEW_ALL","action":"VIEW_ALL","resource":"user","result":"success","message":"User DOCTOR-001 viewed all users"}
+{"timestamp":"2025-06-27T12:50:59.449050Z","event_type":"USER_LOGIN","action":"LOGIN","resource":"user/PATIENT-001","result":"success","message":"User johndoe logged in successfully"}
+{"timestamp":"2025-06-27T12:51:56.336855Z","event_type":"USER_REMOVE","user_id":"PATIENT-001","session_id":"5b9670fb-edb3-46e9-bbba-2a1b2b50645a","application":"EHRViewer","component":"UserService","action":"REMOVE","resource":"user/PATIENT-001","result":"success","message":"Removed user: John Doe","details":{"reason":"Removed via UI","removed_user_type":"PATIENT"},"correlation_id":"2e25e36b-9f28-46ee-9b30-581526c3bdbe"}
+{"timestamp":"2025-06-27T12:51:57.651256Z","event_type":"USER_REMOVE","action":"REMOVE","resource":"user/PATIENT-001","result":"failure","message":"User not found: PATIENT-001"}
+{"timestamp":"2025-06-27T12:51:58.585368Z","event_type":"USER_REMOVE","action":"REMOVE","resource":"user/PATIENT-001","result":"failure","message":"User not found: PATIENT-001"}
+{"timestamp":"2025-06-27T12:51:58.960849Z","event_type":"USER_REMOVE","action":"REMOVE","resource":"user/PATIENT-001","result":"failure","message":"User not found: PATIENT-001"}
+{"timestamp":"2025-06-27T12:51:59.200084Z","event_type":"USER_REMOVE","action":"REMOVE","resource":"user/PATIENT-001","result":"failure","message":"User not found: PATIENT-001"}
+{"timestamp":"2025-06-27T12:52:01.277655Z","event_type":"USER_REMOVE","action":"REMOVE","resource":"user/PATIENT-001","result":"failure","message":"User not found: PATIENT-001"}
+{"timestamp":"2025-06-27T12:52:01.533201Z","event_type":"USER_REMOVE","action":"REMOVE","resource":"user/PATIENT-001","result":"failure","message":"User not found: PATIENT-001"}
+{"timestamp":"2025-06-27T12:52:01.778374Z","event_type":"USER_REMOVE","action":"REMOVE","resource":"user/PATIENT-001","result":"failure","message":"User not found: PATIENT-001"}
+{"timestamp":"2025-06-27T12:52:28.862050Z","event_type":"USER_LOGOUT","action":"LOGOUT","resource":"user/PATIENT-001","result":"success","message":"User johndoe logged out successfully"}
+{"timestamp":"2025-06-27T12:52:49.366386Z","event_type":"USER_LOGIN","action":"LOGIN","resource":"user/DOCTOR-001","result":"success","message":"User alicesmith logged in successfully"}
+{"timestamp":"2025-06-27T12:52:49.372124Z","event_type":"USER_VIEW_ALL","action":"VIEW_ALL","resource":"user","result":"success","message":"User DOCTOR-001 viewed all users"}
+{"timestamp":"2025-06-27T12:53:45.250074Z","event_type":"USER_LOGIN","action":"LOGIN","resource":"user/DOCTOR-001","result":"success","message":"User alicesmith logged in successfully"}
+{"timestamp":"2025-06-27T12:53:45.284872Z","event_type":"USER_VIEW_ALL","action":"VIEW_ALL","resource":"user","result":"success","message":"User DOCTOR-001 viewed all users"}
+{"timestamp":"2025-06-27T12:53:54.646479Z","event_type":"USER_LOGOUT","action":"LOGOUT","resource":"user/DOCTOR-001","result":"success","message":"User alicesmith logged out successfully"}
