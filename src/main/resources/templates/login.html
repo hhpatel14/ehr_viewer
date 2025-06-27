@@ -3,18 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <title>EHR Viewer Login</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-card {
+            background: #fff;
+            padding: 2.5rem 2rem 2rem 2rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+            width: 350px;
+            text-align: center;
+        }
+        .login-card h2 {
+            margin-bottom: 1.5rem;
+            color: #2d3a4b;
+        }
+        .login-card label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #2d3a4b;
+            text-align: left;
+        }
+        .login-card input[type="text"],
+        .login-card input[type="password"] {
+            width: 100%;
+            padding: 0.7rem;
+            margin-bottom: 1.2rem;
+            border: 1px solid #bfc9d1;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: #f7fafc;
+        }
+        .login-card button {
+            width: 100%;
+            padding: 0.8rem;
+            background: #4f8cff;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .login-card button:hover {
+            background: #2563eb;
+        }
+        .error-message {
+            color: #e74c3c;
+            margin-bottom: 1rem;
+        }
+    </style>
 </head>
 <body>
-    <h2>Login</h2>
-    <form th:action="@{/ui/login}" method="post">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required><br><br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br><br>
-        <button type="submit">Login</button>
-    </form>
-    <div th:if="${error}">
-        <p style="color:red;">[[${error}]]</p>
+    <div class="login-card">
+        <h2>EHR Viewer Login</h2>
+        <form th:action="@{/ui/login}" method="post">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+            <button type="submit">Login</button>
+        </form>
+        <div th:if="${error}" class="error-message">
+            <p>[[${error}]]</p>
+        </div>
     </div>
 </body>
 </html> 

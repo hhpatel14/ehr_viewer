@@ -3,35 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <title>User List - EHR Viewer</title>
+    <style>
+        body {
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            background: rgba(255,255,255,0.92);
+            margin-top: 3rem;
+            padding: 2rem 2.5rem 2.5rem 2.5rem;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+            width: 90%;
+            max-width: 800px;
+        }
+        h2 {
+            color: #2563eb;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .actions a, .actions form button {
+            background: #4f8cff;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 0.6rem 1.2rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            margin-left: 0.5rem;
+            transition: background 0.2s;
+        }
+        .actions form button:hover, .actions a:hover {
+            background: #2563eb;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #f7fafc;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(31, 38, 135, 0.08);
+        }
+        th, td {
+            padding: 1rem 0.7rem;
+            text-align: left;
+        }
+        th {
+            background: #e0eafc;
+            color: #2d3a4b;
+            font-size: 1.05rem;
+        }
+        tr:nth-child(even) {
+            background: #f0f4fa;
+        }
+        tr:hover {
+            background: #e3f0ff;
+        }
+        .logout-btn {
+            float: right;
+            background: #e74c3c;
+        }
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+    </style>
 </head>
 <body>
-    <h2>User List</h2>
-    <form th:action="@{/ui/logout}" method="post" style="float:right;">
-        <button type="submit">Logout</button>
-    </form>
-    <a th:href="@{/ui/add-user}">Add New User</a>
-    <table border="1" cellpadding="5" cellspacing="0">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>User Type</th>
-                <th>Username</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="user : ${users}">
-                <td th:text="${user.name}"></td>
-                <td th:text="${user.type}"></td>
-                <td th:text="${user.username}"></td>
-                <td>
-                    <a th:href="@{'/ui/user/' + ${user.userId}}">View</a> |
-                    <form th:action="@{'/ui/remove-user/' + ${user.userId}}" method="post" style="display:inline;">
-                        <button type="submit">Remove</button>
-                    </form>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="container">
+        <h2>User List</h2>
+        <div class="actions">
+            <div>
+                <a th:href="@{/ui/add-user}">+ Add New User</a>
+            </div>
+            <form th:action="@{/ui/logout}" method="post" style="margin:0;">
+                <button type="submit" class="logout-btn">Logout</button>
+            </form>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>User Type</th>
+                    <th>Username</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="user : ${users}">
+                    <td th:text="${user.name}"></td>
+                    <td th:text="${user.type}"></td>
+                    <td th:text="${user.username}"></td>
+                    <td>
+                        <a th:href="@{'/ui/user/' + ${user.userId}}" style="color:#2563eb; font-weight:bold;">View</a> |
+                        <form th:action="@{'/ui/remove-user/' + ${user.userId}}" method="post" style="display:inline;">
+                            <button type="submit" style="background:#e74c3c; color:#fff; border:none; border-radius:6px; padding:0.3rem 0.7rem; font-size:0.95rem; cursor:pointer;">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </body>
 </html> 

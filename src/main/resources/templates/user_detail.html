@@ -3,20 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <title>User Details - EHR Viewer</title>
+    <style>
+        body {
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .detail-card {
+            background: #fff;
+            padding: 2.5rem 2.5rem 2rem 2.5rem;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+            width: 400px;
+            max-width: 95vw;
+        }
+        h2 {
+            color: #2563eb;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #f7fafc;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(31, 38, 135, 0.08);
+        }
+        th, td {
+            padding: 0.8rem 0.7rem;
+            text-align: left;
+            font-size: 1rem;
+        }
+        th {
+            background: #e0eafc;
+            color: #2d3a4b;
+            width: 40%;
+        }
+        tr:nth-child(even) {
+            background: #f0f4fa;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 1.5rem;
+            background: #4f8cff;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 0.6rem 1.2rem;
+            font-size: 1rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .back-link:hover {
+            background: #2563eb;
+        }
+    </style>
 </head>
 <body>
-    <h2>User Details</h2>
-    <table border="1" cellpadding="5" cellspacing="0">
-        <tr><th>Name</th><td th:text="${user.name}"></td></tr>
-        <tr><th>User Type</th><td th:text="${user.type}"></td></tr>
-        <tr><th>Username</th><td th:text="${user.username}"></td></tr>
-        <tr><th>Date of Birth</th><td th:text="${user.dob}"></td></tr>
-        <tr><th>Address</th><td th:text="${user.address}"></td></tr>
-        <tr><th>Age</th><td th:text="${user.age}"></td></tr>
-        <tr><th>Gender</th><td th:text="${user.gender}"></td></tr>
-        <tr><th>Contact Info</th><td th:text="${user.contactInfo}"></td></tr>
-    </table>
-    <br>
-    <a th:href="@{/ui/users}">Back to User List</a>
+    <div class="detail-card">
+        <h2>User Details</h2>
+        <table>
+            <tr><th>Name</th><td th:text="${user.name}"></td></tr>
+            <tr><th>User Type</th><td th:text="${user.type}"></td></tr>
+            <tr><th>Username</th><td th:text="${user.username}"></td></tr>
+            <tr><th>Date of Birth</th><td th:text="${user.dob}"></td></tr>
+            <tr><th>Address</th><td th:text="${user.address}"></td></tr>
+            <tr><th>Age</th><td th:text="${user.age}"></td></tr>
+            <tr><th>Gender</th><td th:text="${user.gender}"></td></tr>
+            <tr><th>Contact Info</th><td th:text="${user.contactInfo}"></td></tr>
+        </table>
+        <a th:href="@{/ui/users}" class="back-link">&larr; Back to User List</a>
+    </div>
 </body>
 </html> 

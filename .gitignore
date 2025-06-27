@@ -33,6 +33,7 @@ ehr-audit-logs/
 # Other common ignores
 *.tmp
 .DS_Store
+**/.DS_Store
 
 # IDE files
 /.idea/
