@@ -1,17 +1,17 @@
 package com.example.ehrviewer.service;
 
 import com.enterprise.audit.logging.config.AuditConfiguration;
-import com.enterprise.audit.logging.exception.AuditLoggingException;
+import com.enterprise.audit.logging.model.AuditContext;
 import com.enterprise.audit.logging.model.AuditEvent;
 import com.enterprise.audit.logging.model.AuditResult;
-import com.enterprise.audit.logging.service.FileSystemAuditLogger;
+import com.enterprise.audit.logging.service.StreamableAuditLogger;
 import com.example.ehrviewer.model.User;
 import com.example.ehrviewer.model.UserRequest;
 import com.example.ehrviewer.model.UserType;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -22,23 +22,24 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Service
 public class UserService {
-    private FileSystemAuditLogger auditLogger;
+    private StreamableAuditLogger auditLogger;
     private final Map<String, User> users = new ConcurrentHashMap<>();
 
     @PostConstruct
-    public void init() throws AuditLoggingException {
-        // Initialize audit logger
+    public void init() {
+        // Initialize audit logger with environment-based configuration (like inventory_management)
         AuditConfiguration config = new AuditConfiguration();
-        config.setLogDirectory("./ehr-audit-logs");
-        config.setAutoCreateDirectory(true);
-        auditLogger = new FileSystemAuditLogger(config);
+        config.setStreamHost(System.getenv().getOrDefault("AUDIT_STREAM_HOST", "localhost"));
+        config.setStreamPort(Integer.parseInt(System.getenv().getOrDefault("AUDIT_STREAM_PORT", "5000")));
+        config.setStreamProtocol(System.getenv().getOrDefault("AUDIT_STREAM_PROTOCOL", "tcp"));
+        auditLogger = new StreamableAuditLogger(config);
 
         // Initialize with some sample users
         initializeSampleUsers();
     }
 
     @PreDestroy
-    public void cleanup() throws AuditLoggingException {
+    public void cleanup() {
         if (auditLogger != null) {
             auditLogger.close();
         }
@@ -54,141 +55,114 @@ public class UserService {
     /**
      * Add a new user.
      */
-    public User addUser(User user, String requesterId, String reason) throws AuditLoggingException {
+    public User addUser(User user, String requesterId, String reason) {
         if (users.containsKey(user.getUserId())) {
-            auditLogger.logFailure(
-                "USER_ADD",
-                "ADD",
-                "user/" + user.getUserId(),
-                "User already exists: " + user.getUserId()
-            );
+            logAuditEvent("USER_ADD", "ADD", "user/" + user.getUserId(), AuditResult.FAILURE, 
+                         "User already exists: " + user.getUserId(), requesterId);
             throw new IllegalArgumentException("User already exists: " + user.getUserId());
         }
         users.put(user.getUserId(), user);
         Map<String, Object> details = new HashMap<>();
         details.put("reason", reason);
-        details.put("added_user_type", user.getType());
-        AuditEvent auditEvent = AuditEvent.builder()
-                .eventType("USER_ADD")
-                .userId(requesterId)
-                .sessionId(UUID.randomUUID().toString())
-                .application("EHRViewer")
-                .component("UserService")
-                .action("ADD")
-                .resource("user/" + user.getUserId())
-                .result(AuditResult.SUCCESS)
-                .message("Added user: " + user.getName())
-                .details(details)
-                .correlationId(UUID.randomUUID().toString())
-                .build();
-        auditLogger.logEvent(auditEvent);
+        details.put("added_user_type", user.getType().toString());
+        logAuditEvent("USER_ADD", "ADD", "user/" + user.getUserId(), AuditResult.SUCCESS, 
+                     "Added user: " + user.getName(), requesterId, details);
         return user;
     }
 
     /**
      * Remove a user.
      */
-    public User removeUser(String userId, String requesterId, String reason) throws AuditLoggingException {
+    public User removeUser(String userId, String requesterId, String reason) {
         User user = users.get(userId);
         if (user == null) {
-            auditLogger.logFailure(
-                "USER_REMOVE",
-                "REMOVE",
-                "user/" + userId,
-                "User not found: " + userId
-            );
+            logAuditEvent("USER_REMOVE", "REMOVE", "user/" + userId, AuditResult.FAILURE, 
+                         "User not found: " + userId, requesterId);
             throw new IllegalArgumentException("User not found: " + userId);
         }
         users.remove(userId);
         Map<String, Object> details = new HashMap<>();
         details.put("reason", reason);
-        details.put("removed_user_type", user.getType());
-        AuditEvent auditEvent = AuditEvent.builder()
-                .eventType("USER_REMOVE")
-                .userId(requesterId)
-                .sessionId(UUID.randomUUID().toString())
-                .application("EHRViewer")
-                .component("UserService")
-                .action("REMOVE")
-                .resource("user/" + userId)
-                .result(AuditResult.SUCCESS)
-                .message("Removed user: " + user.getName())
-                .details(details)
-                .correlationId(UUID.randomUUID().toString())
-                .build();
-        auditLogger.logEvent(auditEvent);
+        details.put("removed_user_type", user.getType().toString());
+        logAuditEvent("USER_REMOVE", "REMOVE", "user/" + userId, AuditResult.SUCCESS, 
+                     "Removed user: " + user.getName(), requesterId, details);
         return user;
     }
 
     /**
      * Get user details.
      */
-    public User getUser(String userId, String requesterId) throws AuditLoggingException {
+    public User getUser(String userId, String requesterId) {
         User user = users.get(userId);
         if (user == null) {
-            auditLogger.logFailure(
-                "USER_VIEW",
-                "VIEW",
-                "user/" + userId,
-                "User not found: " + userId
-            );
+            logAuditEvent("USER_VIEW", "VIEW", "user/" + userId, AuditResult.FAILURE, 
+                         "User not found: " + userId, requesterId);
             throw new IllegalArgumentException("User not found: " + userId);
         }
-        auditLogger.logSuccess(
-            "USER_VIEW",
-            "VIEW",
-            "user/" + userId,
-            "User " + requesterId + " viewed user: " + user.getName()
-        );
+        logAuditEvent("USER_VIEW", "VIEW", "user/" + userId, AuditResult.SUCCESS, 
+                     "User " + requesterId + " viewed user: " + user.getName(), requesterId);
         return user;
     }
 
     /**
      * Get all users.
      */
-    public Map<String, User> getAllUsers(String requesterId) throws AuditLoggingException {
-        auditLogger.logSuccess(
-            "USER_VIEW_ALL",
-            "VIEW_ALL",
-            "user",
-            "User " + requesterId + " viewed all users"
-        );
+    public Map<String, User> getAllUsers(String requesterId) {
+        logAuditEvent("USER_VIEW_ALL", "VIEW_ALL", "user", AuditResult.SUCCESS, 
+                     "User " + requesterId + " viewed all users", requesterId);
         return new HashMap<>(users);
     }
 
     /**
      * Authenticate user by username and password.
      */
-    public User authenticate(String username, String password) throws AuditLoggingException {
+    public User authenticate(String username, String password) {
         for (User user : users.values()) {
             if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
-                auditLogger.logSuccess(
-                    "USER_LOGIN",
-                    "LOGIN",
-                    "user/" + user.getUserId(),
-                    "User " + username + " logged in successfully"
-                );
+                logAuditEvent("USER_LOGIN", "LOGIN", "user/" + user.getUserId(), AuditResult.SUCCESS, 
+                             "User " + username + " logged in successfully", user.getUserId());
                 return user;
             }
         }
-        auditLogger.logFailure(
-            "USER_LOGIN",
-            "LOGIN",
-            "user/unknown",
-            "Failed login attempt for username: " + username
-        );
+        logAuditEvent("USER_LOGIN", "LOGIN", "user/unknown", AuditResult.FAILURE, 
+                     "Failed login attempt for username: " + username, "unknown");
         return null;
     }
 
     /**
      * Log a logout event for a user.
      */
-    public void logLogoutEvent(User user) throws AuditLoggingException {
-        auditLogger.logSuccess(
-            "USER_LOGOUT",
-            "LOGOUT",
-            "user/" + user.getUserId(),
-            "User " + user.getUsername() + " logged out successfully"
-        );
+    public void logLogoutEvent(User user) {
+        logAuditEvent("USER_LOGOUT", "LOGOUT", "user/" + user.getUserId(), AuditResult.SUCCESS, 
+                     "User " + user.getUsername() + " logged out successfully", user.getUserId());
+    }
+
+    /**
+     * Helper method to log audit events using the new v2.0.0 API.
+     */
+    private void logAuditEvent(String eventType, String action, String resource, AuditResult result, 
+                              String message, String userId) {
+        logAuditEvent(eventType, action, resource, result, message, userId, null);
+    }
+
+    private void logAuditEvent(String eventType, String action, String resource, AuditResult result, 
+                              String message, String userId, Map<String, Object> details) {
+        try {
+            AuditContext.setUserId(userId);
+            AuditContext.setApplication("EHRViewer");
+            AuditContext.setComponent("UserService");
+            AuditContext.setCorrelationId(UUID.randomUUID().toString());
+            
+            AuditEvent auditEvent = AuditContext.fromContext(
+                eventType, action, resource, result, message, details
+            );
+            
+            auditLogger.logEventAsync(auditEvent);
+        } catch (Exception e) {
+            // Log error but don't throw to avoid breaking the main functionality
+            System.err.println("Failed to log audit event: " + e.getMessage());
+        } finally {
+            AuditContext.clear();
+        }
     }
 } 

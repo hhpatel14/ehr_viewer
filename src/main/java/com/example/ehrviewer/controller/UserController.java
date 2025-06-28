@@ -3,7 +3,6 @@ package com.example.ehrviewer.controller;
 import com.example.ehrviewer.model.User;
 import com.example.ehrviewer.model.UserRequest;
 import com.example.ehrviewer.service.UserService;
-import com.enterprise.audit.logging.exception.AuditLoggingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -90,7 +89,7 @@ public class UserController {
             } else {
                 return ResponseEntity.status(401).build();
             }
-        } catch (AuditLoggingException e) {
+        } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
     }

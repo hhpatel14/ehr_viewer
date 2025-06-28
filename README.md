@@ -1,6 +1,6 @@
 # EHR Viewer
 
-A simple Electronic Health Record (EHR) Viewer web application built with Spring Boot 2.7.18, Java 8, Thymeleaf, and an in-memory user store. All user actions are audit-logged using the enterprise-audit-library. The app demonstrates RBAC (Role-Based Access Control) and a basic HTML UI for login, logout, user management, and audit logging.
+A modern Electronic Health Record (EHR) Viewer web application built with Spring Boot 3.2.0, Java 21, Thymeleaf, and an in-memory user store. All user actions are audit-logged using the enterprise-audit-library v2.0.0 with streaming capabilities. The app demonstrates RBAC (Role-Based Access Control) and a basic HTML UI for login, logout, user management, and audit logging.
 
 ---
 
@@ -14,23 +14,44 @@ A simple Electronic Health Record (EHR) Viewer web application built with Spring
   - View user details
   - Add new user (staff only)
   - Remove user (staff only)
-- **Audit Logging:** All actions (login, logout, add, remove, view) are logged to disk
+- **Modern Audit Logging:** All actions are logged using the enterprise-audit-library v2.0.0 with streaming capabilities
 - **Simple HTML UI** (Thymeleaf)
+- **Spring Boot 3.2.0** with Java 21 support
 
 ---
 
 ## Getting Started
 
 ### Prerequisites
-- Java 8 or higher (Java 17+ also works)
+- **Java 21** (required for Spring Boot 3.2.0)
 - Maven 3.6+
 
-### Build the Application
+### 1. Start Logstash (Required)
+
+The EHR viewer requires Logstash to be running for audit logging. Start Logstash first:
+
+```bash
+# Using Podman (recommended)
+podman run -d --name logstash-ehr -p 5000:5000 \
+  -v $(pwd)/logstash.conf:/usr/share/logstash/pipeline/logstash.conf \
+  -v $(pwd)/logstash.yml:/usr/share/logstash/config/logstash.yml \
+  docker.elastic.co/logstash/logstash:8.11.0
+
+# Using Docker (alternative)
+docker run -d --name logstash-ehr -p 5000:5000 \
+  -v $(pwd)/logstash.conf:/usr/share/logstash/pipeline/logstash.conf \
+  -v $(pwd)/logstash.yml:/usr/share/logstash/config/logstash.yml \
+  docker.elastic.co/logstash/logstash:8.11.0
+```
+
+**Note:** The application will fail to start if Logstash is not available. This is intentional for production environments where audit logging is critical.
+
+### 2. Build the Application
 ```sh
 mvn clean package
 ```
 
-### Run the Application
+### 3. Run the Application
 ```sh
 mvn spring-boot:run
 ```
@@ -72,14 +93,39 @@ The app will start on [http://localhost:8081](http://localhost:8081)
 
 ---
 
-## Audit Logging
-- All actions are logged to disk in JSON format.
-- Log files are stored in `ehr-audit-logs/audit.log` in the project directory.
-- Each log entry includes timestamp, event type, action, resource, result, message, and details.
+## Audit Logging (v2.0.0)
 
-To view logs:
-```sh
-tail -f ehr-audit-logs/audit.log
+The application uses the enterprise-audit-library v2.0.0 with streaming capabilities:
+
+- **Streaming Architecture:** Audit events are streamed over TCP to a configured endpoint (default: localhost:5044)
+- **Async Logging:** Non-blocking audit logging using virtual threads (Java 21)
+- **Structured JSON:** Line-delimited JSON events for easy ingestion into ELK stack
+- **Cloud-Native Ready:** Designed for containers, Kubernetes, and distributed systems
+
+### Configuration
+The audit logger is configured to stream events to:
+- **Host:** localhost (configurable via `AUDIT_STREAM_HOST` environment variable)
+- **Port:** 5000 (configurable via `AUDIT_STREAM_PORT` environment variable)
+- **Protocol:** TCP (configurable via `AUDIT_STREAM_PROTOCOL` environment variable)
+
+### Logstash Integration
+To receive audit events, configure Logstash with:
+```conf
+input {
+  tcp {
+    port => 5000
+    codec => json
+  }
+}
+output {
+  stdout {
+    codec => json
+  }
+  file {
+    path => "/tmp/ehr-audit-events.log"
+    codec => json
+  }
+}
 ```
 
 ---
@@ -93,11 +139,21 @@ tail -f ehr-audit-logs/audit.log
 
 ---
 
+## Technology Stack
+- **Spring Boot:** 3.2.0
+- **Java:** 21
+- **Audit Library:** enterprise-audit-library 2.0.0
+- **Template Engine:** Thymeleaf
+- **Build Tool:** Maven 3.11.0
+
+---
+
 ## Notes
 - **In-memory storage:** All users are stored in memory and reset on restart.
 - **No registration:** Only staff can add users; patients cannot self-register.
 - **No password hashing:** For demo purposes only. Do not use in production.
 - **RBAC:** Enforced in the UI controller for user list and details.
+- **Streaming Audit:** Requires a log aggregation service (like Logstash) to receive audit events.
 
 ---
 
