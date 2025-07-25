@@ -4,14 +4,15 @@ import com.enterprise.audit.logging.config.AuditConfiguration;
 import com.enterprise.audit.logging.model.AuditContext;
 import com.enterprise.audit.logging.model.AuditEvent;
 import com.enterprise.audit.logging.model.AuditResult;
+import com.enterprise.audit.logging.service.FileSystemAuditLogger;
 import com.enterprise.audit.logging.service.StreamableAuditLogger;
 import com.example.ehrviewer.model.User;
 import com.example.ehrviewer.model.UserRequest;
 import com.example.ehrviewer.model.UserType;
 import org.springframework.stereotype.Service;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -22,17 +23,16 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Service
 public class UserService {
-    private StreamableAuditLogger auditLogger;
+    private FileSystemAuditLogger auditLogger;
     private final Map<String, User> users = new ConcurrentHashMap<>();
 
     @PostConstruct
     public void init() {
         // Initialize audit logger with environment-based configuration (like inventory_management)
         AuditConfiguration config = new AuditConfiguration();
-        config.setStreamHost(System.getenv().getOrDefault("AUDIT_STREAM_HOST", "localhost"));
-        config.setStreamPort(Integer.parseInt(System.getenv().getOrDefault("AUDIT_STREAM_PORT", "5000")));
-        config.setStreamProtocol(System.getenv().getOrDefault("AUDIT_STREAM_PROTOCOL", "tcp"));
-        auditLogger = new StreamableAuditLogger(config);
+        config.setLogDirectory("./ehr-audit-logs");
+        config.setAutoCreateDirectory(true);
+        auditLogger = new FileSystemAuditLogger(config);
 
         // Initialize with some sample users
         initializeSampleUsers();
