@@ -5,7 +5,6 @@ import com.enterprise.audit.logging.model.AuditContext;
 import com.enterprise.audit.logging.model.AuditEvent;
 import com.enterprise.audit.logging.model.AuditResult;
 import com.enterprise.audit.logging.service.FileSystemAuditLogger;
-import com.enterprise.audit.logging.service.StreamableAuditLogger;
 import com.example.ehrviewer.model.User;
 import com.example.ehrviewer.model.UserRequest;
 import com.example.ehrviewer.model.UserType;
